@@ -49,12 +49,12 @@ export default {
     operation: function() {
       this.display = (this.display.indexOf('+') > 0) 
       ? this.display.split('+').reduce((a, b) => Number(a) + Number(b)) :
-      (this.display.indexOf('-') > 0)
-      ? this.display.split('-').reduce((a, b) => a - b) :
       (this.display.indexOf(':') > 0 || this.display.indexOf("/") > 0)
       ? this.display.replace(/:/i, '/').split('/').reduce((a, b) => a / b) :
       (this.display.indexOf('*') > 0 || this.display.indexOf("x") > 0) 
       ? this.display.replace(/x/i, '*').split('*').reduce((a, b) => a * b) :
+      (this.display.indexOf('-') > -1)
+      ? this.display.split('-').reduce((a, b) => a - b) :
       this.display = ""
     },
     clear: function() {
@@ -86,7 +86,7 @@ background-color: #E8F4F2;
 .container{
   width: 400px;
   border: 1px solid black;
-  margin: auto;
+  margin: 50px auto;
   background: rgba(67, 147, 182, 0.425);
   border-radius: 5px;
 }
