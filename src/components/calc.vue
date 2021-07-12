@@ -2,35 +2,26 @@
   <div class="container">
     <div class="inp">
       <input
-      pattern="[0-9]{1,15}"
       v-model="display"
       v-on:keyup.enter="operation"
       >
-      
       <button class="clear"
       v-on:click="clear">clear</button>
     </div>
     <div class="keys">
       <div class="numerals">
-        <div v-on:click="num('1')">1</div>
-        <div v-on:click="num('2')">2</div>
-        <div v-on:click="num('3')">3</div>
-        <div v-on:click="num('4')">4</div>
-        <div v-on:click="num('5')">5</div>
-        <div v-on:click="num('6')">6</div>
-        <div v-on:click="num('7')">7</div>
-        <div v-on:click="num('8')">8</div>
-        <div v-on:click="num('9')">9</div>
-        <div v-on:click="num('.')">.</div>
-        <div v-on:click="num('0')">0</div>
+        <div
+          v-for="number in numbers"
+          :key="number"
+          v-on:click="num(number)">{{ number }}</div>
         <button class="submit"
         v-on:click="operation">=</button>
       </div>
       <div class="actions">
-        <div v-on:click="num('+')">+</div>
-        <div v-on:click="num('-')">-</div>
-        <div v-on:click="num('/')">:</div>
-        <div v-on:click="num('*')">X</div>
+        <div
+          v-for="(action, index) in actions"
+          :key="index"
+          v-on:click="num(action.type)">{{ action.type }}</div>
       </div>
     </div>
   </div>
@@ -41,29 +32,58 @@ export default {
   name: 'Calc',
   data() {
     return {
-    display: "",
-    temp: []
+      display: '',
+      temp: '',
+      numbers: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'],
+      actions: [
+        {
+          type: '+',
+          method: 'sum',
+        }, {
+          type: '-',
+          method: 'subtraction',
+        }, {
+          type: ':',
+          method: 'divide',
+        }, {
+          type: 'x',
+          method: 'multiply',
+        }
+      ]
     }
   },
   methods: {
     operation: function() {
-      this.display = (this.display.indexOf('+') > 0) 
-      ? this.display.split('+').reduce((a, b) => Number(a) + Number(b)) :
-      (this.display.indexOf(':') > 0 || this.display.indexOf("/") > 0)
-      ? this.display.replace(/:/i, '/').split('/').reduce((a, b) => a / b) :
-      (this.display.indexOf('*') > 0 || this.display.indexOf("x") > 0) 
-      ? this.display.replace(/x/i, '*').split('*').reduce((a, b) => a * b) :
-      (this.display.indexOf('-') > -1)
-      ? this.display.split('-').reduce((a, b) => a - b) :
-      this.display = ""
+      this.actions.forEach(action => {
+        if (this.display.indexOf(action.type) !== -1) {
+          let arr = this.display.split(action.type);
+          this.display = String(this[action.method](arr));
+        }
+      });
     },
     clear: function() {
-      this.display = ""
-      this.temp = []
+      this.display = '';
     },
     num: function(num) {
-      this.temp.push(num)
-      this.display = this.temp.join('')
+      this.display += num;
+    },
+    multiply: numb => {
+      return numb.reduce((a, b) => a * b);
+    },
+    divide: numb => {
+      return numb.reduce((a, b) => a / b);
+    },
+    sum: numb => {
+      return numb.reduce((a, b) => Number(a) + Number(b));
+    },
+    subtraction: numb => {
+      numb.forEach((item, index) => {
+        if (!item) {
+          numb[index + 1] = -numb[index + 1];
+        }
+      });
+      numb = numb.filter(el => !!el);
+      return numb.reduce((a, b) => a - b);
     }
   }
 }
@@ -71,17 +91,17 @@ export default {
 
 <style>
 body {
-background: 
-linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px -37px, 
-linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px 111px, 
-linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px 37px, 
-linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px 37px, 
-linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 0px, 
-linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 0px, 
-linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 74px, 
-linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 74px;
-background-size: 148px 148px;
-background-color: #E8F4F2;
+  background:
+  linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px -37px, 
+  linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px 111px, 
+  linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px 37px, 
+  linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 37px 37px, 
+  linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 0px, 
+  linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 0px, 
+  linear-gradient(135deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 74px, 
+  linear-gradient(225deg, transparent 24.5%, #449CB4 24.6%, transparent 24.8%) 74px 74px;
+  background-size: 148px 148px;
+  background-color: #E8F4F2;
 }
 .container{
   width: 400px;
